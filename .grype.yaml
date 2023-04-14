@@ -1,0 +1,3 @@
+ignore:
+  # Not going to be fixed - check https://security-tracker.debian.org/tracker/CVE-2016-2781
+  - vulnerability: CVE-2016-2781
