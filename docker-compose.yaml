@@ -1,0 +1,11 @@
+version: '3'
+services:
+  bash-container-template:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bash-container-template
+    env_file:
+      - ./.env
+    volumes:
+      - ./scripts:/scripts

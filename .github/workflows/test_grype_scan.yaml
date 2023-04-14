@@ -1,0 +1,65 @@
+name: Vuln. Scan
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - '**.md'
+    tags-ignore:
+      - '**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs: # Docs: <https://git.io/JvxXE>
+  scan-image:
+    name: Check for packages vulnerabilities with Grype
+    runs-on: ubuntu-20.04
+    env:
+      RUN_CONTAINER_FOREVER: 1
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: >
+          docker build
+          --file ./Dockerfile
+          --tag bash-container-template:local
+          --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          --build-arg BUILD_VERSION=${{ github.event.release.tag_name }}
+          --build-arg VCS_REF=${GITHUB_SHA}
+          .
+
+      - name: Configure grype
+        run: cat ./.grype.yaml && cp .grype.yaml ~/
+
+      - name: Scan image
+        uses: anchore/scan-action@v3 # action page: <https://github.com/anchore/scan-action>
+        id: scan
+        with:
+          image: bash-container-template:local
+          fail-build: false
+          severity-cutoff: low # negligible, low, medium, high or critical
+
+      - name: Upload Anchore scan SARIF report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+      - name: Inspect action SARIF report
+        id: scanReportOutput
+        run: cat ${{ steps.scan.outputs.sarif }}
+
+      - name: Test output of scan report
+        run: |
+          scanResults=$(cat ${{ steps.scan.outputs.sarif }} | jq -r '.runs[0].results')
+          echo "Results: "
+          if [ "$scanResults" == "[]" ]; then
+            echo "NO VULNERABILITY DETECTED"
+          else
+            echo "VULNERABILITIES DETECTED! Results: $scanResults"
+            exit 1;
+          fi
