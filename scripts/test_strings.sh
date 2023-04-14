@@ -82,6 +82,7 @@ if [ -z "$1" ]; then
 
     testPrintMsg
     testPrintMsgWithColor
+    testPrintTitle
     testPrintHeader
     testPrintHeaderLong
 else

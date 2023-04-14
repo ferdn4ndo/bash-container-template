@@ -1,7 +1,7 @@
 # Bash Container Template
 
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/ferdn4ndo/bash-container-template/latest)](https://hub.docker.com/r/ferdn4ndo/bash-container-template)
-[![E2E test status](https://github.com/ferdn4ndo/bash-container-template/actions/workflows/test_e2e.yaml/badge.svg?branch=main)](https://github.com/ferdn4ndo/bash-container-template/actions)
+[![E2E test status](https://github.com/ferdn4ndo/bash-container-template/actions/workflows/test_ut_e2e.yaml/badge.svg?branch=main)](https://github.com/ferdn4ndo/bash-container-template/actions)
 [![GitLeaks test status](https://github.com/ferdn4ndo/bash-container-template/actions/workflows/test_code_leaks.yaml/badge.svg?branch=main)](https://github.com/ferdn4ndo/bash-container-template/actions)
 [![Grype test status](https://github.com/ferdn4ndo/bash-container-template/actions/workflows/test_grype_scan.yaml/badge.svg?branch=main)](https://github.com/ferdn4ndo/bash-container-template/actions)
 [![ShellCheck test status](https://github.com/ferdn4ndo/bash-container-template/actions/workflows/test_code_quality.yaml/badge.svg?branch=main)](https://github.com/ferdn4ndo/bash-container-template/actions)
