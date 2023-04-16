@@ -41,16 +41,7 @@ jobs: # Docs: <https://git.io/JvxXE>
           bash-container-template:local
 
       - name: Run the Unit Tests (UTs)
-        run: docker exec -i bash-container-template sh -c "./run_tests.sh"
+        run: docker exec -i bash-container-template sh -c "./run_unit_tests.sh"
 
       - name: Run the End-to-End (E2E) tests
-        run: |
-          output=$(docker logs bash-container-template --tail=10 | grep "Dummy service execution completed")
-          if [ "$output" == "" ]; then
-            echo "Container output test failed!"
-            exit 1
-          else
-            echo "Container output test succeeded!"
-          fi
-
-          docker exec -i bash-container-template sh -c "./run_tests.sh"
+        run: ./scripts/run_e2e_tests.sh
