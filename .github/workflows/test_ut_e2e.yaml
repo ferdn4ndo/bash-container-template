@@ -41,7 +41,7 @@ jobs: # Docs: <https://git.io/JvxXE>
           bash-container-template:local
 
       - name: Run the Unit Tests (UTs)
-        run: docker exec -i docker-containers-monitor sh -c "./run_unit_tests.sh"
+        run: docker exec -i bash-container-template sh -c "./run_unit_tests.sh"
 
       - name: Run the End-to-End (E2E) tests
         run: ./scripts/run_e2e_tests.sh
