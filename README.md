@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/ferdn4ndo/bash-container-template)](https://github.com/ferdn4ndo/bash-container-template/releases)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-An Alpine-based docker image template for bash-based services, including a complete CI workflow with UTs and E2E validation. Protected against code leakage by [GitLeaks](https://github.com/gitleaks/gitleaks-action/) and package vulnerabilities by [Anchore Grype](https://github.com/anchore/grype). CI pipeline with code quality check by [Shellcheck](https://github.com/koalaman/shellcheck), internal Unit Tests (UTs), and E2E Automated Test (ATs).
+An Alpine-based docker image template for bash-based services, including a complete CI workflow with internal Unit Tests (UTs), and E2E Automated Tests (ATs). Protected against code leakage by [GitLeaks](https://github.com/gitleaks/gitleaks-action/) and package vulnerabilities by [Anchore Grype](https://github.com/anchore/grype). Code quality check by [ShellCheck](https://github.com/koalaman/shellcheck).
 
 ## Main features
 
@@ -17,8 +17,8 @@ An Alpine-based docker image template for bash-based services, including a compl
 * Supports colored messages and provides built-in methods for printing decorated messages;
 * Code leakage check on every push by [GitLeaks](https://github.com/gitleaks/gitleaks-action/);
 * Third-packages vulnerabilities test on every push by [Anchore Grype](https://github.com/anchore/grype);
-* Automatic code quality check on every push by [Shellcheck](https://github.com/koalaman/shellcheck);
-* Custom E2E test using [custom Github Actions](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_ut_e2e.yaml);
+* Automatic code quality check on every push by [ShellCheck](https://github.com/koalaman/shellcheck);
+* E2E test validation using [custom Github Actions](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_ut_e2e.yaml);
 
 ## Summary
 
@@ -33,6 +33,8 @@ An Alpine-based docker image template for bash-based services, including a compl
   * [General Configuration](#general-configuration)
     * [RUN_CONTAINER_FOREVER](#run_container_forever)
 * [Testing](#testing)
+  * [Unit Tests (UTs)](#unit-tests-uts)
+  * [End-to-End (E2E) Tests](#end-to-end-e2e-tests)
 * [Contributing](#contributing)
   * [Contributors](#contributors)
 * [License](#license)
@@ -71,6 +73,8 @@ After setting up the environment and building the image, you can now launch a co
 docker run --rm -v "./scripts:/scripts" --env-file ./.env --name "bash-container-template" bash-container-template:latest
 ```
 
+Note that the volume `-v "./scripts:/scripts"` is only needed when you want a hot-reload feature in the development environment.
+
 ### Running in docker-compose
 
 As this repository has a Docker image available for pulling, we can add this service to an existing stack by creating a service using the `ferdn4ndo/bash-container-template:latest` identifier:
@@ -102,7 +106,11 @@ Default: `0`
 
 ## Testing
 
-To execute the ATs, make sure that both the `bash-container-template` container is up and running.
+The repository pipelines also include testing for code leaks at [.github/workflows/test_code_leaks.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_code_leaks.yaml), testing for package vulnerabilities at [.github/workflows/test_grype_scan.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_grype_scan.yaml), testing for code quality at [.github/workflows/test_code_quality.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_code_quality.yaml), and UTs (which will call the `run_*_tests.sh` scripts) + E2E functional tests at [.github/workflows/test_ut_e2e.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_ut_e2e.yaml), which are described in the sections below.
+
+### Unit Tests (UTs)
+
+To execute the ATs, make sure that the `bash-container-template` container is up and running.
 
 This can be achieved by running the `docker-compose.yaml` file:
 
@@ -113,12 +121,24 @@ docker compose up --build --remove-orphans
 Then, after the container is up and running, execute this command in the terminal to run the test script inside the `bash-container-template` container:
 
 ```bash
-docker exec -it bash-container-template sh -c "./run_tests.sh"
+# The UTs script must be executed from inside the service container
+docker exec -it bash-container-template sh -c "./run_unit_tests.sh"
 ```
 
 The script will successfully execute if all the tests have passed or will abort with an error otherwise. The output is verbose, give a check.
 
-The repository pipelines also include testing for code leaks at [.github/workflows/test_code_leaks.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_code_leaks.yaml), testing for package vulnerabilities at [.github/workflows/test_grype_scan.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_grype_scan.yaml), testing for code quality at [.github/workflows/test_code_quality.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_code_quality.yaml), and UTs (which will call the `run_tests.sh` script) + E2E functional tests at [.github/workflows/test_ut_e2e.yaml](https://github.com/ferdn4ndo/bash-container-template/blob/main/.github/workflows/test_ut_e2e.yaml).
+### End-to-End (E2E) Tests
+
+To execute the ATs (as in the UTs), please first make sure that the `bash-container-template` container is up and running.
+
+Then, **from the host terminal (not inside the container)**, execute the E2E test script:
+
+```bash
+# The E2E test script must be executed from the HOST machine (outside the service container)
+./scripts/run_e2e_tests.sh
+```
+
+The script will successfully execute if all the tests have passed or will abort with an error otherwise. The output is verbose, give a check.
 
 ## Contributing
 
